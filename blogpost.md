@@ -57,8 +57,86 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * Doesn't look like I have to select a model - guess it "just works?"
     * It asks me before running commands in my shell. That seems like a sensible security and sanity measure. It starts by checking if .NET is already installed.
     * It's going to wget some source repo packages from some microsoft.com URL and then apt-get install them. Seems sensible. Pressed run again.
-    * Would have got stuck on my password. Clicked in the terminal and entered my password. Neat.
-    * OK that just didn't work. It's apologised to me and is going to try another script from dot.net. I don't recognise that so Google it - official MS site. Clicked run again.
+    * Would have got stuck on my password. Clicked in the terminal and entered my password. Neat that it lets you enter its terminal like that.
+    * OK that just full on didn't work. It's apologised to me and is going to try another script from dot.net. I don't recognise that so Google it - official MS site. Clicked run again.
     * It's going to add a non existant `.dotnet` directory to my path and then create a new webapp apparently. Run.
-    * It shows me the diff of the changes its made. Or at least I think so as there's also a "Tick" and "Cross"
+    * It shows me the diff of the changes its made. Or at least I think so as there's also a "Tick" and "Cross".
     * It's gonna run the app now. Cool let's try that. Run.
+    * It's running based on the console output. I manually open URL in browser. OK that worked and it did make the changes.
+    * Use old fashioned human brain to git commit progress so far.
+
+## Minute 60-90 
+
+* Came back after a few days
+    * No idea how to run this web app - tried the command the AI said and it doesn't work. Going to use "ask" mode.
+    * OK it was the AI's fault for not adding the installed dotnet to path
+    * I'm not convinced it installed it in the best way if I'm having to do that but there we go
+    * Wanted to rename - ran the commands and it broke. Tried deleting things using human brain. Didn't work.
+    * Asked AI to fix its own mess - it gave a solution (to rename to be explicit about namespace) but I worked out a better one - change the view imports. Take that AI.
+    * Want to fix .gitignore so asked the AI to do it. All ignored correctly.
+* Let's get it to create the user interface
+    * I think I'm going to get AI to do it in stages like I would
+    * Went with
+    ```
+    Modify @/SixFingertips web app to modify the front page to have a single large text box and a submit button which calls a function.
+    ```
+    * It's actually quite cool that this works.
+    * OK wonder if it will do all the styling. I want it to use GOV.UK design system
+    ```
+    Restyle the app to use the NHS.uk frontend library. Use NHS.uk frontend components to replace bootstrap components. Documentation on how to import the relevant parts are at @https://service-manual.nhs.uk/design-system/production 
+    ```
+    * For some reason it's used version v7.1.0 and when I check the latest is v9.6.2
+    * Let's see how it looks - it looks pretty good. The footer is a bit broken though. I wonder if we can fix that.
+    ```
+    Can you fix the footer to use the footer component as intended?
+    ```
+    * Let's ask it to use the latest version instead. Those who don't know what they're doing will definitely get old stuff or the wrong stuff.
+    * It downloaded it but made the wrong imports I think. Changed them. Still broken. Asked AI to fix it.
+    ```
+    The styling is broken - the menu and footer don't look right.
+    ```
+    * Let's see if it can revert back the changes it made
+    ```
+    It is still broken. Revert the changes back to before you changed from v7.1.0
+    ```
+    * It works again. We'll try again now. Will it avoid fucking it up this time?
+    ```
+    Update the version of nhsuk-frontend to v9.6.2 from v7.1.0. Update any component code as needed to ensure it looks the same after the version change.
+    ```
+    * It starts by barking up the wrong tree and looking for an automatically imported package. It can identify the changes needed but instead of doing them, like it did before. It stops part of the way through and asks me if I'd like more help.
+    ```
+    Please download and replace the old files with the new files
+    ```
+    * It's not found the right place to download them this time. It's getting frustrating. I'm just going to help it out and do it myself.
+    * It's broken in exactly the same way. Guess there were breaking changes between v7.1.0 and v9.6.2 it didn't identify.
+    ```
+    The header doesn't look right and has an out of place "Menu" text. Can you fix it to use the correct NHS design system header?
+    ```
+    * It hasn't fixed anything. I'll try asking in a different way. I'm starting to find this frustrating. I could have done this much more quickly myself.
+    ```
+    Remove the text and button that says "Menu"
+    ```
+    * It's removed the whole navigation section now...
+    ```
+    I didn't ask you to remove the whole navigation bar. Put the Home and Privacy Policy links back.
+    ```
+    * We did it Joe! Now to fix the footer again.
+    ```
+    Fix the footer now. Do not change any of the links, just fix the styling to use the correct NHS Design System styling.
+    ```
+    * Hmm it's still broken
+    ```
+    It's still not fixed. Look again to ensure the footer component is being used correctly.
+    ```
+    * It's still broken, so let's try prompting a bit differently.
+    ```
+    Remove the footer entirely. Insert a new NHS Design System footer component.
+    ```
+    * I give up.
+    ```
+    Remove the whole footer
+    ```
+    * I'm having to rebuild every time - I wonder if there's a live watch style way of doing this. AI gave the right answer first time with explanation.
+## Minute 90-120
+
+    * Uh oh

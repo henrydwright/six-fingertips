@@ -1,0 +1,33 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="nhsuk-grid-row">
+    <div class="nhsuk-grid-column-two-thirds">
+        <h1 class="nhsuk-heading-xl">Text Input</h1>
+        
+        <form method="post">
+            <div class="nhsuk-form-group">
+                <label class="nhsuk-label" for="input-text">
+                    Enter your text
+                </label>
+                <div class="nhsuk-hint" id="input-text-hint">
+                    Enter the text you want to process
+                </div>
+                <textarea 
+                    class="nhsuk-textarea" 
+                    id="input-text" 
+                    name="InputText" 
+                    rows="10" 
+                    aria-describedby="input-text-hint"
+                    asp-for="InputText"></textarea>
+            </div>
+
+            <button class="nhsuk-button" data-module="nhsuk-button" type="submit">
+                Submit
+            </button>
+        </form>
+    </div>
+</div>
