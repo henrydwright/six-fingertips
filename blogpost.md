@@ -209,3 +209,6 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * AI is still unable to write async code after installing the code, but then again so am I as I have no clue how it works in C#. Luckily with the extension enabled I am now able to guess my way through the methods to get something working.
     * After much pain and suffering I got it to work.
 * I think it really struggles to use its own knowledge if the library you want to use didn't exist at the knoweledge cut off date. I wonder if some very targeted prompting will help it do better for the next task. It certainly seems adept at using the .NET core components but it makes mistakes I don't make even with complete "most likely next suggestion" guesswork.
+
+# Minute 150-180
+* After consulting docs it seems that what I need doesn't have Terraform helpers that can create it. So I Terraform destory things and delete the folder. Nothing ventured nothing gained.

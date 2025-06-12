@@ -9,7 +9,6 @@ public class AgentService
 {
     private readonly PersistentAgentsClient _client;
     private readonly string _modelDeploymentName;
-    private readonly string _agentId;
 
     public AgentService(IConfiguration configuration)
     {
