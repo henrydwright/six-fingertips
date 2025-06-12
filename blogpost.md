@@ -81,7 +81,7 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     Modify @/SixFingertips web app to modify the front page to have a single large text box and a submit button which calls a function.
     ```
     * It's actually quite cool that this works.
-    * OK wonder if it will do all the styling. I want it to use GOV.UK design system
+    * OK wonder if it will do all the styling. I want it to use NHS design system
     ```
     Restyle the app to use the NHS.uk frontend library. Use NHS.uk frontend components to replace bootstrap components. Documentation on how to import the relevant parts are at @https://service-manual.nhs.uk/design-system/production 
     ```
@@ -136,7 +136,27 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     ```
     Remove the whole footer
     ```
-    * I'm having to rebuild every time - I wonder if there's a live watch style way of doing this. AI gave the right answer first time with explanation.
+    * I'm having to rebuild every time - I wonder if there's a live watch style way of doing this. AI gave the right answer (`dotnet watch`) first time with explanation.
 ## Minute 90-120
 
-    * Uh oh
+* It's time to get meta. I don't think I'm using the tool effectively. I'm going to ask Cursor how to prompt Cursor effectively.
+    * It looks like clarity and context is key. Somebody on Twitter (I got distracted) has described it as a junior dev with amnesia, which sounds about right.
+    * It's almost like you have a highly skilled dev but they need a micromangement level of direction
+    * No wonder my vague instructions about the footer didn't work. I wonder whether I need to provide the documentation up front.
+    ```
+    I am creating a .NET core web app in @/SixFingertips using the NHS Design System. Carry out the following steps:
+    1. Update the site-wide page template to match the "Content Page Template" on @https://service-manual.nhs.uk/design-system/styles/page-template
+    2. Remove the search box
+    ```
+* Big leagues time now. I'm going to get it to help me decide between Terraform and Azure ARM Templates
+    * It's recommended Terraform. Let's try using my learning to see if I can give it a good prompt and get it going
+    ```
+    I am writing a web app which will allow users to ask questions to an AI agent connected to a third party service. Plesae perform the following steps - perform these strictly in order and do not skip any steps:
+    1. Install Terraform if it is not already installed
+    2. Create a new Terraform project inside a new top level project folder called "SixFingertipsInfrastructure"
+    3. Write Terraform code to deploy an Azure AI Foundry Agent that uses GPT-4o-mini
+    ```
+    * It's produced some feasible looking Terraform with some minor redundant code and some names I think could be clearer. I tidy up after it.
+    * Let's let rip - `terraform plan` seems sensible so I apply it. I get an error on apply.
+    * I ask the model for a correction. It tells me my model name is wrong. I don't believe it. I look at the docs and come to a different answer. It works this time.
+    * I'm not sure if it's just me but I'm having to do a fair bit of babysitting and keep my eye on the ball to tidy up errors. Perhaps I'm using the wrong models, perhaps I'm 
