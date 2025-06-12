@@ -27,7 +27,7 @@
             </div>
         }
 
-        <form method="post">
+        <form method="post" id="questionForm">
             <div class="nhsuk-form-group @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-form-group--error" : "")">
                 <label class="nhsuk-label" for="input-text">
                     Enter your question
@@ -55,9 +55,18 @@
             </button>
         </form>
 
+        <div id="loadingMessage" style="display: none;" class="nhsuk-card nhsuk-card--feature">
+            <div class="nhsuk-card__content">
+                <h2 class="nhsuk-card__heading nhsuk-heading-m">Processing your request</h2>
+                <div class="nhsuk-card__description">
+                    <p class="nhsuk-body">Please wait while we generate your response...</p>
+                </div>
+            </div>
+        </div>
+
         @if (!string.IsNullOrEmpty(Model.AgentResponse))
         {
-            <div class="nhsuk-card nhsuk-card--feature">
+            <div class="nhsuk-card nhsuk-card--feature" id="responseCard">
                 <div class="nhsuk-card__content">
                     <h2 class="nhsuk-card__heading nhsuk-heading-m">Response</h2>
                     <div class="nhsuk-card__description">
@@ -68,3 +77,18 @@
         }
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('questionForm');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const responseCard = document.getElementById('responseCard');
+
+        form.addEventListener('submit', function() {
+            if (responseCard) {
+                responseCard.style.display = 'none';
+            }
+            loadingMessage.style.display = 'block';
+        });
+    });
+</script>

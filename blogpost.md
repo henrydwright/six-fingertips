@@ -212,3 +212,23 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
 
 # Minute 150-180
 * After consulting docs it seems that what I need doesn't have Terraform helpers that can create it. So I Terraform destory things and delete the folder. Nothing ventured nothing gained.
+* I want to refine the user interface so I try and get it to add a simple generating message whilst the agent is thinking
+    ```
+    You are editing a .NET core app which connects to an Azure AI Agent. 
+
+    Currently when the user clicks the submit button, nothing is displayed in the user interface whilst a response is being generated.
+
+    Please add an informative message to the screen which is displayed only whilst waiting on the AgentService to generate the result.
+    ```
+    * It has an attempt, but that attempt uses JQuery, which does not exist in the project and just the JavaScript fails to function. Clear the context. Try again with a new prompt.
+    ```
+    Make edits to @Index.cshtml and @Index.cshtml.cs so that an informative message is displayed to the user between clicking "Submit" and the result being displayed.
+    ```
+    * That also didn't work. It's trying to change the page display using server side code only, but the issue is the page doesn't do anything whilst waiting for a post response
+    * Maybe it's using a dud model. What if I specifically task Claude with the job? It's going to cost more requests but mucking around as-is is costing a huge amount of requests.
+    ```
+    Make edits to @Index.cshtml ONLY which display an informative message between clicking on the "Send" button and the page completing loading the response once generated.
+
+    Use only pure JavaScript. Do not assume any libraries are installed.
+    ```
+    * With a bit more direction it succeeds. Not sure the manually specified model makes any difference though. This seems to be a theme!
