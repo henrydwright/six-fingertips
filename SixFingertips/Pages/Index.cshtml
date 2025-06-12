@@ -1,33 +1,70 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "AI Assistant";
 }
 
 <div class="nhsuk-grid-row">
     <div class="nhsuk-grid-column-two-thirds">
-        <h1 class="nhsuk-heading-xl">Text Input</h1>
+        <h1 class="nhsuk-heading-xl">AI Assistant</h1>
         
+        @if (!ModelState.IsValid)
+        {
+            <div class="nhsuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1">
+                <h2 class="nhsuk-error-summary__title" id="error-summary-title">
+                    There is a problem
+                </h2>
+                <div class="nhsuk-error-summary__body">
+                    <ul class="nhsuk-list nhsuk-error-summary__list">
+                        @foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>
+                                <a href="#input-text">@modelError.ErrorMessage</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
         <form method="post">
-            <div class="nhsuk-form-group">
+            <div class="nhsuk-form-group @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-form-group--error" : "")">
                 <label class="nhsuk-label" for="input-text">
-                    Enter your text
+                    Enter your question
                 </label>
                 <div class="nhsuk-hint" id="input-text-hint">
-                    Enter the text you want to process
+                    Type your question or request here
                 </div>
+                @if (ModelState["InputText"]?.Errors?.Count > 0)
+                {
+                    <span class="nhsuk-error-message" id="input-text-error">
+                        <span class="nhsuk-u-visually-hidden">Error:</span> @ModelState["InputText"]?.Errors[0]?.ErrorMessage
+                    </span>
+                }
                 <textarea 
-                    class="nhsuk-textarea" 
+                    class="nhsuk-textarea @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-textarea--error" : "")" 
                     id="input-text" 
                     name="InputText" 
-                    rows="10" 
-                    aria-describedby="input-text-hint"
+                    rows="5" 
+                    aria-describedby="input-text-hint @(ModelState["InputText"]?.Errors.Count > 0 ? "input-text-error" : "")"
                     asp-for="InputText"></textarea>
             </div>
 
             <button class="nhsuk-button" data-module="nhsuk-button" type="submit">
-                Submit
+                Send
             </button>
         </form>
+
+        @if (!string.IsNullOrEmpty(Model.AgentResponse))
+        {
+            <div class="nhsuk-card nhsuk-card--feature">
+                <div class="nhsuk-card__content">
+                    <h2 class="nhsuk-card__heading nhsuk-heading-m">Response</h2>
+                    <div class="nhsuk-card__description">
+                        <p class="nhsuk-body">@Model.AgentResponse</p>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>

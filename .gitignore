@@ -48,3 +48,6 @@ nupkg/
 !**/packages/build/
 *.nuget.props
 *.nuget.targets
+
+# Config files
+appsettings.Development.json

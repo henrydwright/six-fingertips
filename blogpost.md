@@ -148,6 +148,7 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     1. Update the site-wide page template to match the "Content Page Template" on @https://service-manual.nhs.uk/design-system/styles/page-template
     2. Remove the search box
     ```
+    * That worked a LOT better.
 * Big leagues time now. I'm going to get it to help me decide between Terraform and Azure ARM Templates
     * It's recommended Terraform. Let's try using my learning to see if I can give it a good prompt and get it going
     ```
@@ -159,4 +160,52 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * It's produced some feasible looking Terraform with some minor redundant code and some names I think could be clearer. I tidy up after it.
     * Let's let rip - `terraform plan` seems sensible so I apply it. I get an error on apply.
     * I ask the model for a correction. It tells me my model name is wrong. I don't believe it. I look at the docs and come to a different answer. It works this time.
-    * I'm not sure if it's just me but I'm having to do a fair bit of babysitting and keep my eye on the ball to tidy up errors. Perhaps I'm using the wrong models, perhaps I'm 
+    * I'm not sure if it's just me but I'm having to do a fair bit of babysitting and keep my eye on the ball to tidy up errors. Perhaps I'm using the wrong models, perhaps I'm not providing enough context. Next time I am going to add way more.
+* I think it's time to get it to write some backend code. I'm going to use a huge prompt and give very explicit instructions. Let's see if that does any better.
+    ```
+    You are an AI agent writing a .NET core web app in C# (code in @/SixFingertips ) which allows the user to interact with an AI agent.
+
+    The objective is to create a working interface so that when the user inputs text into the main textarea and clicks Submit in @Index.cshtml, the input is submitted to an agent and the answer displayed on the same page.
+
+    DO NOT finish until the objective is complete. Complete the objective by completing ALL of the steps below:
+    1. Study the documentation for the Azure.AI.Agents.Persistent package at @https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.agents.persistent-readme?view=azure-dotnet 
+    2. Install the package to the project
+    3. Create code that instantiates an agent using an already deployed Azure OpenAI Services resource (allow deployment details to be input via environment variables or similar)
+    4. Allow the user to submit input to the agent using the textarea and submit button
+    5. Display the messages returned by the agent on the main page
+    6. Ensure the user interface uses NHS Design System components
+    ```
+    * A common theme is emerging. Given knowledge cut off, it does seem to struggle with getting the right package versions. I'm getting build errors and security vulnerabilities.
+    * What I am really enjoying is the "Ask" function which definitely saves time versus looking in the documentation. This is especially true given my shaky understanding of .NET Core.
+    * Getting build errors still, but at least they're not package related.
+    * I'm going to get the agent to fix these errors.
+    ```
+    There are some build errors. Please correct the build errors and verify the code builds correctly. Continue until you have fixed the code so it builds correctly.
+    ```
+    * More errors. Let's try chucking the context and pretend I made the mistakes. Now there's modesty.
+    ```
+    I am building a web app in @/SixFingertips using .NET Core in C# and the Azure AI Persistent Agents library.
+
+    I appear to have made some mistakes whilst creating the code and need you to fix them. The build errors I am getting are provided as context.
+
+    You may need to use a web search to find relevant documentation, or navigate links off the documentation homepage for the library@https://learn.microsoft.com/en-us/dotnet/api/azure.ai.agents.persistent?view=azure-dotnet
+    ```
+    * Still not quite working, we roll again. I realise I feel quite vulnerable handing over all this control to AI as I don't really fully understand anything its doing. I also feel like I'm not learning anywhere near as much from the process as I'm not understanding what it's doing or fixing things. 
+    ```
+    There is one more issue to fix. I have provided the build error. Please provide a fix that enables the code to build.
+    ```
+    * In any case simply adding a new package hasn't fixed things and doesn't give me a good gut feel. I'm going to reject those changes and try again.
+    * This time I use my human brain to find the right AI documentation for the line of code causing the error. I use the inline function and tell the AI what mistake it's made and give it the documentation link to use to try and find the right methods.
+    * New build error. I fust around in the docs and make some manual changes to get the errors to go away. I don't know what I'm doing but I have at least got it to build. Let's see the vibe.
+    * LOL I forgot to add my credentials. Let us try again.
+
+## Minute 120-150
+* It's added some quite good error handling at least. But the code is very much still broken.
+    * I think it's actually the infrastructure that isn't quite working and it's no fault of the agent that did the backend code. I tried to use an Azure AI project I'd set up earlier to give it a model to call and work with.
+    * Now there are new errors. It's really really struggling with this to be honest. Neither the inline code editing chat, nor tab suggestions yield correct or valid code, even with prompting.
+    * I really hate the automatic tab suggestions in Cursor. I'd happily accept the suggestions if they were any good but every time I've tried to accept them it's yielded garbage. What I really want to do is accept the "legacy" suggestion from the interface. 
+    * Given I don't have any documentation pop ups myself I wonder if the lack of type information is helping or hindering it. The lack of documentation hoverovers are really hindering me for sure.
+    * Maybe it's because I ignored a prompt to install an extension. Yeah the extension isn't installed for C# - doh.
+    * AI is still unable to write async code after installing the code, but then again so am I as I have no clue how it works in C#. Luckily with the extension enabled I am now able to guess my way through the methods to get something working.
+    * After much pain and suffering I got it to work.
+* I think it really struggles to use its own knowledge if the library you want to use didn't exist at the knoweledge cut off date. I wonder if some very targeted prompting will help it do better for the next task. It certainly seems adept at using the .NET core components but it makes mistakes I don't make even with complete "most likely next suggestion" guesswork.

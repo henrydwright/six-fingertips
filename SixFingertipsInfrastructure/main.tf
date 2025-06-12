@@ -35,4 +35,8 @@ resource "azurerm_cognitive_deployment" "ai_model_deployment" {
   scale {
     type = "GlobalStandard"
   }
+}
+
+output "cognitive_services_endpoint" {
+  value = azurerm_cognitive_account.ai_account.endpoint
 } 
