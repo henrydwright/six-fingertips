@@ -50,4 +50,4 @@ nupkg/
 *.nuget.targets
 
 # Config files
-appsettings.Development.json
+SixFingertips/appsettings.Development.json
