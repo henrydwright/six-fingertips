@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SixFingertips.Services;
+using Markdig;
 
 namespace SixFingertips.Pages;
 
@@ -14,6 +15,9 @@ public class IndexModel : PageModel
 
     [BindProperty]
     public string? AgentResponse { get; set; }
+
+    [BindProperty]
+    public string? AgentResponseHtml { get; set; }
 
     public IndexModel(ILogger<IndexModel> logger, AgentService agentService)
     {
@@ -34,6 +38,16 @@ public class IndexModel : PageModel
                 _logger.LogInformation("Processing user input: {Text}", InputText);
                 AgentResponse = await _agentService.ProcessUserInputAsync(InputText);
                 _logger.LogInformation("Received agent response: {Response}", AgentResponse);
+                
+                // Convert Markdown to HTML
+                if (!string.IsNullOrEmpty(AgentResponse))
+                {
+                    var pipeline = new MarkdownPipelineBuilder()
+                        .UseAdvancedExtensions()
+                        .DisableHtml() // For security, disable raw HTML
+                        .Build();
+                    AgentResponseHtml = Markdown.ToHtml(AgentResponse, pipeline);
+                }
             }
             catch (Exception ex)
             {

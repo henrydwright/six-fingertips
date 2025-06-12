@@ -232,3 +232,13 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     Use only pure JavaScript. Do not assume any libraries are installed.
     ```
     * With a bit more direction it succeeds. Not sure the manually specified model makes any difference though. This seems to be a theme!
+* The agent often returns Markdown, but we want that displayed in the interface as HTML. Time to ask an Agent to help us out...
+    ```
+    I am creating a .NET core app in @/SixFingertips which allows the user to enter a prompt and have an AI agent respond.
+
+    The response String that is returned by the agent in the highlighted line in @Index.cshtml.cs often contains Markdown text.
+
+    Add processing logic to @Index.cshtml and/or @Index.cshtml.cs which processes any Markdown returned and displays the information back to user with correct formatting.
+    ```
+    * OK, I'm getting way better at this. That just worked first time.
+    * Sometimes it feels like I'm a superhero with the AI when it works and sometimes I just feel stupid and supernumerary.
