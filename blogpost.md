@@ -242,3 +242,16 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     ```
     * OK, I'm getting way better at this. That just worked first time.
     * Sometimes it feels like I'm a superhero with the AI when it works and sometimes I just feel stupid and supernumerary.
+* Now I want to get the agent to use Fingertips data so I grab the API spec, convert from Swagger v2 to OpenAPI v3 and dump into my project folder.
+    * Time to use AI to integrate the tool
+    ```
+    I am writing an AI agent to help users make use of data from the Fingertips public health dataset. 
+
+    The agent is implemented using the Azure AI Foundry Agent library (documented at @https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.agents.persistent-readme?view=azure-dotnet#function-call )
+
+    Using the example in @https://learn.microsoft.com/en-us/azure/ai-services/agents/how-to/tools/openapi-spec-samples?pivots=csharp , modify ONLY code in @AgentService.cs  to add an OpenApiToolDefinition that uses the OpenAPI spec defined in "wwwroot/fingertips_api_spec.json"
+    ```
+    * Again, worked first time! I suspect I need to improve the prompt because it's getting stuck using the (admittedly very complicated) API for Fingertips.
+# Minute 180-...
+
+* Now it's time to refine the design and functionality of the app before readying this blog post for publication
