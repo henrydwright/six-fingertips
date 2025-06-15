@@ -27,12 +27,12 @@ public class AgentService
         try
         {
             // Read the OpenAPI spec file
-            var specPath = Path.Combine(_webHostEnvironment.WebRootPath, "fingertips_api_spec.json");
+            var specPath = Path.Combine(_webHostEnvironment.WebRootPath, "fingertips_api_spec_subset.json");
             var openApiSpec = await File.ReadAllBytesAsync(specPath);
 
             // Create OpenAPI tool definition
             var openApiTool = new OpenApiToolDefinition(
-                name: "fingertips_api",
+                name: "fingertips_api_reduced",
                 description: "Access the Fingertips public health dataset API to retrieve health indicators and data",
                 spec: BinaryData.FromBytes(openApiSpec),
                 openApiAuthentication: new OpenApiAnonymousAuthDetails()
@@ -41,8 +41,9 @@ public class AgentService
             // Create a new agent with the OpenAPI tool
             var agentResponse = await _client.Administration.CreateAgentAsync(
                 model: _modelDeploymentName,
-                name: "Fingertips Health Data Assistant",
-                instructions: "You are a helpful assistant that can access and analyze public health data from the Fingertips dataset. Use the fingertips_api tool to retrieve data when needed.",
+                name: "Fingertips Health Data Assistant (v1.3)",
+                instructions: "You are a helpful assistant that can access and analyze public health data from the Fingertips dataset. Use the fingertips_api_reduced tool to retrieve data when needed. "+
+                "The area type IDs available are: 7 - GP Practice; 170, 173 and 180 - Council; 54, 56, 58, 60 and 63 - CCG or sub-ICB location; Primary Care Network (PCN) - 204",
                 tools: new List<ToolDefinition> { openApiTool }
             );
             var agent = agentResponse.Value;

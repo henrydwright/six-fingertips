@@ -220,7 +220,7 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
 
     Please add an informative message to the screen which is displayed only whilst waiting on the AgentService to generate the result.
     ```
-    * It has an attempt, but that attempt uses JQuery, which does not exist in the project and just the JavaScript fails to function. Clear the context. Try again with a new prompt.
+    * It has an attempt, but that attempt uses JQuery, which does not exist in the project and the JavaScript just fails to function. Clear the context. Try again with a new prompt.
     ```
     Make edits to @Index.cshtml and @Index.cshtml.cs so that an informative message is displayed to the user between clicking "Submit" and the result being displayed.
     ```
@@ -255,3 +255,20 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
 # Minute 180-...
 
 * Now it's time to refine the design and functionality of the app before readying this blog post for publication
+* The prompt to the agent clearly needs work as it fails to understand how to use the Fingertips API
+    * To be fair to it, I don't currently understand how to use the Fingertips API
+    * This is an area I know that I will now need to understand better to augment the context provided to the AI to help it solve more problems
+    * I need a way of testing if I'm making the agent better or worse, so I design a set of test cases in a .csv file.
+    * OK so I needed to understand the API a bit better to understand what sorts of questions that can and can't be answered before writing my CSV
+    * Doing this as a human I'm learning things. For example the API uses the NHS ODS codes for some thigns (e.g. GP practices, NHS Trusts) but not others (e.g. ICBs and CCG boundaries which get ONS style E.... codes)
+    * Turns out you can trace what your agent is doing if you try it out on the Azure AI Foundry portal. This helps me see what API calls its trying before failing.
+    * It appears that the agent gets confused by the overwhelming choice of methods to call to find an area. 
+    * I've cut down the different functions the agent can use to a single function by manually curating a subset of 1 function of the whole OpenAPI spec. I have also modified some of the documentation to explain better in plain English what that method does.
+    * I plan to slowly add back in methods and tweak the documentation to improve performance. Before that I'd better write a few test queries and then I can report back here on the score for each iteration.
+    * Turns out there's a lot of things in Fingertips (who guessed!) so I'm going to write test prompts that target correct answers about GP practices and their related entities.
+    * Wrote some test cases that should be enough to do a little fine tuning as this is just an experimental project. Tested with the first agent which had the full API first as "v0" and stored the responses in the spreadsheet with the prompts.
+    * Version 0 passes only 1 out of 11 test cases - a paltry 9%.
+    * I've further tweaked the documentation and provided a restricted list of the area methods to help the agent get the right method first time. This is version 1 and should do a lot better at the various area questions in my test set.
+    * The new version now passes 7 out of 11 test cases - a vast improvement. In both versions the LLM displays some weird behaviour - pretending it could do it if the system worked properly or just lying.
+    * The oddest thing about this, is it hasn't really been code I've been editing, its been prompts and documentation. If AI is to take off, we must curate clearly written information and docmentation to help it understand the world.
+    

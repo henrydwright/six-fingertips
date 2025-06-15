@@ -1,0 +1,391 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Public Health Data API",
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "https://fingertips.phe.org.uk/"
+        }
+    ],
+    "paths": {
+        "/api/area_search": {
+            "get": {
+                "tags": [
+                    "Areas"
+                ],
+                "summary": "Search for an area by name and area type ID. Can be useful for finding the area code (e.g. for use in other API calls) if you only have a name for an area.",
+                "operationId": "Areas_SearchForAreaByNameAndType",
+                "parameters": [
+                    {
+                        "name": "search_text",
+                        "in": "query",
+                        "description": "Text to search for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "area_type_ids",
+                        "in": "query",
+                        "description": "IDs of the area types to search for. Multiple IDs can be provided, separated by commas (e.g. '54,56,58,60,63' for CCG or sub-ICB locations)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SearchResultArea"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/area/parent_areas": {
+            "get": {
+                "tags": [
+                    "Areas"
+                ],
+                "summary": "Retrieve the parent area that contains a given area. (e.g. what PCN a GP practice is in, or what ICB a CCG is in)",
+                "operationId": "Areas_GetParentAreas",
+                "parameters": [
+                    {
+                        "name": "child_area_code",
+                        "in": "query",
+                        "description": "Area code of the area whose parent area is to be retrieved",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parent_area_type_ids",
+                        "in": "query",
+                        "description": "Area type ID(s) of the parent area types to retrieve. Multiple IDs can be provided, separated by commas (e.g. '54,56,58,60,63' for CCG or sub-ICB locations)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AreaToParentsMap"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/areas/by_area_code": {
+            "get": {
+                "tags": [
+                    "Areas"
+                ],
+                "summary": "Retrieve information on an area code or common separated list of area codes. Useful when you have retrieved an area code from another API call and want basic details on it (e.g. its name).",
+                "operationId": "Areas_GetAreasByAreaCode",
+                "parameters": [
+                    {
+                        "name": "area_codes",
+                        "in": "query",
+                        "description": "List of area codes. Multiple area codes can be provided, separated by commas (e.g. 'K84056,K84057' for two GP practices)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/IArea"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/areas/by_parent_area_code": {
+            "get": {
+                "tags": [
+                    "Areas"
+                ],
+                "summary": "Retrieve child areas contained within a parent area (e.g. all GP practices in a PCN or LSOAs in a council area).",
+                "operationId": "Areas_GetChildAreas",
+                "parameters": [
+                    {
+                        "name": "area_type_id",
+                        "in": "query",
+                        "description": "Area type ID of the child area type to retrieve. Only a single area type ID can be provided at a time.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "parent_area_code",
+                        "in": "query",
+                        "description": "Area code of the parent area whose child areas are to be retrieved",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "profile_id",
+                        "in": "query",
+                        "description": "Profile ID [optional]",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/IArea"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/IArea"
+                                    }
+                                }
+                            },
+                            "text/xml": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/IArea"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/area_address": {
+            "get": {
+                "tags": [
+                    "Areas"
+                ],
+                "summary": "Gets the address for a given area code (including latitude and longitude). Useful when you have retrieved an area code from another API call and want the address.",
+                "operationId": "Areas_GetAreaAddress",
+                "parameters": [
+                    {
+                        "name": "area_code",
+                        "in": "query",
+                        "description": "Area code of the area whose address is to be retrieved",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AreaAddress"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "SearchResultArea": {
+                "type": "object",
+                "properties": {
+                    "Code": {
+                        "type": "string"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Short": {
+                        "type": "string"
+                    },
+                    "AreaTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "ParentArea": {
+                        "$ref": "#/components/schemas/Area"
+                    },
+                    "IsComponentOf": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                }
+            },
+            "Area": {
+                "type": "object",
+                "properties": {
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Short": {
+                        "type": "string"
+                    },
+                    "AreaTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Sequence": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Code": {
+                        "type": "string"
+                    }
+                }
+            },
+            "IArea": {
+                "type": "object",
+                "properties": {
+                    "Code": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "Sequence": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Name": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "ShortName": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "AreaTypeId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "readOnly": true
+                    },
+                    "IsAreaList": {
+                        "type": "boolean",
+                        "readOnly": true
+                    }
+                }
+            },
+            "AreaToParentsMap": {
+                "type": "object",
+                "properties": {
+                    "Code": {
+                        "type": "string"
+                    },
+                    "AreaTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Parents": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AreaToParentsMap"
+                        }
+                    }
+                }
+            },
+            "AreaAddress": {
+                "type": "object",
+                "properties": {
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Short": {
+                        "type": "string"
+                    },
+                    "AreaTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "A1": {
+                        "type": "string"
+                    },
+                    "A2": {
+                        "type": "string"
+                    },
+                    "A3": {
+                        "type": "string"
+                    },
+                    "A4": {
+                        "type": "string"
+                    },
+                    "Postcode": {
+                        "type": "string"
+                    },
+                    "IsCurrent": {
+                        "type": "boolean"
+                    },
+                    "Code": {
+                        "type": "string"
+                    },
+                    "LatLng": {
+                        "$ref": "#/components/schemas/LatitudeLongitude"
+                    }
+                }
+            },
+            "LatitudeLongitude": {
+                "type": "object",
+                "properties": {
+                    "Lat": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "Lng": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            }
+        }
+    },
+    "x-original-swagger-version": "2.0"
+}
