@@ -41,7 +41,7 @@ public class AgentService
             // Create a new agent with the OpenAPI tool
             var agentResponse = await _client.Administration.CreateAgentAsync(
                 model: _modelDeploymentName,
-                name: "Fingertips Health Data Assistant (v1.3)",
+                name: "Fingertips Health Data Assistant (v2)",
                 instructions: "You are a helpful assistant that can access and analyze public health data from the Fingertips dataset. Use the fingertips_api_reduced tool to retrieve data when needed. "+
                 "The area type IDs available are: 7 - GP Practice; 170, 173 and 180 - Council; 54, 56, 58, 60 and 63 - CCG or sub-ICB location; Primary Care Network (PCN) - 204",
                 tools: new List<ToolDefinition> { openApiTool }

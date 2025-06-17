@@ -262,13 +262,23 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * OK so I needed to understand the API a bit better to understand what sorts of questions that can and can't be answered before writing my CSV
     * Doing this as a human I'm learning things. For example the API uses the NHS ODS codes for some thigns (e.g. GP practices, NHS Trusts) but not others (e.g. ICBs and CCG boundaries which get ONS style E.... codes)
     * Turns out you can trace what your agent is doing if you try it out on the Azure AI Foundry portal. This helps me see what API calls its trying before failing.
-    * It appears that the agent gets confused by the overwhelming choice of methods to call to find an area. 
+* It appears that the agent gets confused by the overwhelming choice of methods to call to find an area and can't construct a coherent chain of thought to get from prompt to answer.
     * I've cut down the different functions the agent can use to a single function by manually curating a subset of 1 function of the whole OpenAPI spec. I have also modified some of the documentation to explain better in plain English what that method does.
     * I plan to slowly add back in methods and tweak the documentation to improve performance. Before that I'd better write a few test queries and then I can report back here on the score for each iteration.
     * Turns out there's a lot of things in Fingertips (who guessed!) so I'm going to write test prompts that target correct answers about GP practices and their related entities.
     * Wrote some test cases that should be enough to do a little fine tuning as this is just an experimental project. Tested with the first agent which had the full API first as "v0" and stored the responses in the spreadsheet with the prompts.
     * Version 0 passes only 1 out of 11 test cases - a paltry 9%.
-    * I've further tweaked the documentation and provided a restricted list of the area methods to help the agent get the right method first time. This is version 1 and should do a lot better at the various area questions in my test set.
+    * I've further tweaked the documentation and provided a restricted list of the area methods to help the agent get the right method first time to get the codes it needs to use any of the other API calls. This is version 1 and should do a lot better at the various area questions in my test set.
     * The new version now passes 7 out of 11 test cases - a vast improvement. In both versions the LLM displays some weird behaviour - pretending it could do it if the system worked properly or just lying.
     * The oddest thing about this, is it hasn't really been code I've been editing, its been prompts and documentation. If AI is to take off, we must curate clearly written information and docmentation to help it understand the world.
+* Time to start work on V2 of the agent which I want to gain a few more methods from the full API library (without overwhelming the agent with choice) to actually have some data to work with rather than just geographical hierarchy.
+    * Huh - one of the methods I want for v2 doesn't have OpenAPI schema documentation. LLM-assited coding comes in useful here - it's grunt work and boring grunt work at that. AI does the heavy lifting and I come in and check it. This is a good use of the inline (Ctrl + K) editor.
+    ```
+    Write an OpenAPI compliant schema object for the below JSON 
+    <copy of JSON output from API call>
+    ```
+    * Documentation is king - I know what some of the figures mean by inference and setting specific knowledge. The AI can guess, but it's much better for it just to be able to know. If we write what we know down, AI can use it to generate new results.
+    * The early results from simply adding the GP summary data endpoint are pretty amazing. It can now write comparisons about PCNs based on Fingertips data. The Azure AI Foundry portal allows us to look at traces (INCLUDE PICTURE HERE)
+    * Even more amazingly, with the addition of the code interpreter tool in the AI Foundry portal interface, it can also make graphs! Very exciting... (INCLUDE PICTURE HERE)
+
     

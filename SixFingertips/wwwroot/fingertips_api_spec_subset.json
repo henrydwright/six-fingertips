@@ -231,6 +231,57 @@
                     }
                 }
             }
+        },
+        "/api/quinary_population_summary": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Get summary information for a GP practice given its area code. Only works for GP practices (with area type ID of 7). The summary information includes non-white ethnicity breakdown, deprivation, CQC rating, % satisfaction score, male and female life expectancy and QOF achievement.",
+                "operationId": "Data_GetGPPracticeSummaryInformation",
+                "parameters": [
+                    {
+                        "name": "area_code",
+                        "in": "query",
+                        "description": "Area code for the GP practice",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "area_type_id",
+                        "in": "query",
+                        "description": "Area type ID for GP practice (i.e. only accepts '7')",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "data_point_offset",
+                        "in": "query",
+                        "description": "Time period offset from the data point (i.e. latest available time period) [Default is 0]",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GPPracticeSummary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -282,6 +333,164 @@
                     },
                     "Code": {
                         "type": "string"
+                    }
+                }
+            },
+            "GPPracticeSummary": {
+                "type": "object",
+                "properties": {
+                    "Code": {
+                        "type": "string",
+                        "description": "GP practice code"
+                    },
+                    "Ethnicity": {
+                        "type": "string",
+                        "description": "Estimated proportions for non-white ethnic groups in the practice population. White ethnicity is not included in this breakdown."
+                    },
+                    "GpDeprivationDecile": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Deprivation decile (1-10) of the GP practice area. Higher values indicate LOWER deprivation - a score of 10 is lowest possible deprivation and 1 is highest level of deprivation."
+                    },
+                    "CQCRatingID": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "CQC rating (1-4). 4 is outstanding, 3 is good, 2 is requires improvement, 1 is inadequate."
+                    },
+                    "CQCRatingReportDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "CQCRatingReportLink": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL to the CQC rating report"
+                    },
+                    "AdHocValues": {
+                        "type": "object",
+                        "properties": {
+                            "Qof": {
+                                "type": "object",
+                                "properties": {
+                                    "AgeId": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "SexId": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "IndicatorId": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "AreaCode": {
+                                        "type": "string"
+                                    },
+                                    "Denom": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "description": "Total number of possible QOF points"
+                                    },
+                                    "Denom2": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Year": {
+                                        "type": "integer",
+                                        "format": "int32",
+                                        "description": "QOF achievement year"
+                                    },
+                                    "YearRange": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "Quarter": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "Month": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "Sig": {
+                                        "type": "object"
+                                    },
+                                    "CategoryTypeId": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "CategoryId": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "DataDate": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "nullable": true
+                                    },
+                                    "Val": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "description": "% of possible QOF points that have been achieved"
+                                    },
+                                    "Count": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "description": "Number of QOF points achieved"
+                                    }
+                                }
+                            },
+                            "Recommend": {
+                                "type": "object",
+                                "properties": {
+                                    "Val": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "description": "% having a positive experience of their practice based on GP patient survey data"
+                                    },
+                                    "Count": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "ValF": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "LifeExpectancyMale": {
+                                "type": "object",
+                                "properties": {
+                                    "Val": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Count": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "ValF": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "LifeExpectancyFemale": {
+                                "type": "object",
+                                "properties": {
+                                    "Val": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Count": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "ValF": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
