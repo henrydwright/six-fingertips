@@ -232,6 +232,57 @@
                 }
             }
         },
+        "/api/quinary_population": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Get breakdown of size of GP registered population by 5-year 'quinary' age bands (for a PCN or individual GP practice). For individual GP practices, also get the total registered population at that practice.",
+                "operationId": "Data_GetQuinaryPopulation",
+                "parameters": [
+                    {
+                        "name": "area_code",
+                        "in": "query",
+                        "description": "Area code for the GP practice or PCN to get the population breakdown for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "area_type_id",
+                        "in": "query",
+                        "description": "Area type ID. Either '7' for GP practice or '204' for Primary Care Network (PCN)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "data_point_offset",
+                        "in": "query",
+                        "description": "[Optional] Number of years prior to the latest available year to get the data for (i.e. if '0' returns period of 2024, '1' would return 2023, '2' would return 2022, etc.) [Default is 0]",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuinaryPopulationBreakdown"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/quinary_population_summary": {
             "get": {
                 "tags": [
@@ -489,6 +540,79 @@
                                         "type": "string"
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            },
+            "QuinaryPopulationBreakdown": {
+                "type": "object",
+                "required": ["Code", "Values", "PopulationTotals", "Labels", "Period"],
+                "properties": {
+                    "Code": {
+                        "type": "string",
+                        "description": "GP practice or PCN code"
+                    },
+                    "Values": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "format": "double"
+                            }
+                        },
+                        "description": "Percentage (%) of total population in that age and sex band given as two arrays (1=male, 2=female). Each array follows same order as 'Labels' array."
+                    },
+                    "PopulationTotals": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int32"
+                            }
+                        },
+                        "description": "Population totals by age and sex given as two arrays (1=male, 2=female). Each array follows same order as 'Labels' array."
+                    },
+                    "Labels": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Labels for each age band"
+                    },
+                    "IndicatorName": {
+                        "type": "string"
+                    },
+                    "IndicatorId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Period": {
+                        "type": "string",
+                        "description": "Year to which the population data relates"
+                    },
+                    "ChildAreaCount": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "For PCNs only - the number of practices in that PCN"
+                    },
+                    "ListSize": {
+                        "type": "object",
+                        "description": "For GP practices only - the total registered population at that practice",
+                        "properties": {
+                            "Val": {
+                                "type": "integer",
+                                "format": "int32",
+                                "description": "Total registered population at that practice"
+                            },
+                            "Count": {
+                                "type": "integer",
+                                "format": "int32"
+                            },
+                            "ValF": {
+                                "type": "string"
                             }
                         }
                     }

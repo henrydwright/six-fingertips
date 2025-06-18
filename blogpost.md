@@ -280,5 +280,12 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * Documentation is king - I know what some of the figures mean by inference and setting specific knowledge. The AI can guess, but it's much better for it just to be able to know. If we write what we know down, AI can use it to generate new results.
     * The early results from simply adding the GP summary data endpoint are pretty amazing. It can now write comparisons about PCNs based on Fingertips data. The Azure AI Foundry portal allows us to look at traces (INCLUDE PICTURE HERE)
     * Even more amazingly, with the addition of the code interpreter tool in the AI Foundry portal interface, it can also make graphs! Very exciting... (INCLUDE PICTURE HERE)
+* The Fingertips API goes down sometimes completely randomly so I've decided to make the final design tweaks.
+    * I start by asking the AI to replace the normal design header with the transactional service header as this app will only have the one page
+    ```
+    Make changes to @_Layout.cshtml only so that the header uses the NHS transactional service header as detailed on @https://service-manual.nhs.uk/design-system/components/header 
+    ```
+    * It does half a job, but doesn't remove the navigation elements. I just copy and paste from the docs instead as it's far quicker.
+    
 
     

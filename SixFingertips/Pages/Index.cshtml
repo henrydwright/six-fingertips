@@ -6,7 +6,7 @@
 
 <div class="nhsuk-grid-row">
     <div class="nhsuk-grid-column-two-thirds">
-        <h1 class="nhsuk-heading-xl">AI Assistant</h1>
+        <h1 class="nhsuk-heading-l">What is your question?</h1>
         
         @if (!ModelState.IsValid)
         {
@@ -26,14 +26,13 @@
                 </div>
             </div>
         }
-
         <form method="post" id="questionForm">
             <div class="nhsuk-form-group @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-form-group--error" : "")">
                 <label class="nhsuk-label" for="input-text">
                     Enter your question
                 </label>
                 <div class="nhsuk-hint" id="input-text-hint">
-                    Type your question or request here
+                    For best results ensure your question is specific and includes mention of the GP practice(s), PCN(s) or geographical areas you are interested in.
                 </div>
                 @if (ModelState["InputText"]?.Errors?.Count > 0)
                 {
@@ -84,6 +83,13 @@
                 </div>
             </div>
         }
+    <h2 class="nhsuk-heading-m">How does this site work?</h2>
+    <p class="nhsuk-body">
+        This site uses an Azure AI Foundry Agent with access to a subset of methods in the <a href="https://fingertips.phe.org.uk/">Fingertips</a> API to provide responses to natural language queries based on public health data.
+    </p>
+     <p class="nhsuk-body">
+      I used AI (specifically Cursor) to help me code this site. My experience of writing code with AI assistance is documented in this blog post from June 2025.
+    </p>
     </div>
 </div>
 
