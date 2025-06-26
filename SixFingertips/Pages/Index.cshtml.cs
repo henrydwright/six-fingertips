@@ -19,6 +19,10 @@ public class IndexModel : PageModel
     [BindProperty]
     public string? AgentResponseHtml { get; set; }
 
+    [BindProperty]
+    public string? PercentBudgetUsed { get; set; }
+    public string? TotalTokensUsed { get; set; }
+
     public IndexModel(ILogger<IndexModel> logger, AgentService agentService)
     {
         _logger = logger;
@@ -36,7 +40,10 @@ public class IndexModel : PageModel
             try
             {
                 _logger.LogInformation("Processing user input: {Text}", InputText);
-                AgentResponse = await _agentService.ProcessUserInputAsync(InputText);
+                var encapsulatedAgentResponse = await _agentService.ProcessUserInputAsync(InputText);
+                AgentResponse = encapsulatedAgentResponse.AgentResponseText;
+                PercentBudgetUsed = String.Format("{0:0.00}", encapsulatedAgentResponse.AgentLifetimeResourceUsage.PercentProjectBudgetUsed);
+                TotalTokensUsed = (encapsulatedAgentResponse.AgentLifetimeResourceUsage.TotalCompletionTokens + encapsulatedAgentResponse.AgentLifetimeResourceUsage.TotalPromptTokens).ToString("N0");
                 _logger.LogInformation("Received agent response: {Response}", AgentResponse);
                 
                 // Convert Markdown to HTML
@@ -52,7 +59,7 @@ public class IndexModel : PageModel
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing user input");
-                ModelState.AddModelError(string.Empty, "An error occurred while processing your request. Please try again.");
+                ModelState.AddModelError(string.Empty, ex.StackTrace ?? "Detailed error information could not be retrieved.");
             }
         }
         return Page();

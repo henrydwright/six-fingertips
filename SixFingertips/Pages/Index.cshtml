@@ -15,11 +15,12 @@
                     There is a problem
                 </h2>
                 <div class="nhsuk-error-summary__body">
+                    <p>An error occurred while processing your request. Please try again.</p>
                     <ul class="nhsuk-list nhsuk-error-summary__list">
                         @foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
                         {
                             <li>
-                                <a href="#input-text">@modelError.ErrorMessage</a>
+                                @modelError.ErrorMessage
                             </li>
                         }
                     </ul>
@@ -85,11 +86,28 @@
         }
     <h2 class="nhsuk-heading-m">How does this site work?</h2>
     <p class="nhsuk-body">
-        This site uses an Azure AI Foundry Agent with access to a subset of methods in the <a href="https://fingertips.phe.org.uk/">Fingertips</a> API to provide responses to natural language queries based on public health data.
+        This site uses an Azure AI Foundry Agent with access to 1) a subset of methods in the <a href="https://fingertips.phe.org.uk/">Fingertips</a> API and 2) a code interpreter to provide responses to natural language queries based on public health data.
     </p>
      <p class="nhsuk-body">
       I used AI (specifically Cursor) to help me code this site. My experience of writing code with AI assistance is documented in this blog post from June 2025.
     </p>
+    @if (!String.IsNullOrEmpty(Model.PercentBudgetUsed))
+    {
+        <h2 class="nhsuk-heading-m">When will the site stop working?</h2>
+        <p>To avoid being bankrupted, this site will stop after a certain amount of money is spent on the underlying GPT-4o-mini model.</p>
+        <div class="nhsuk-card">
+            <div class="nhsuk-card__content">
+                <h3 class="nhsuk-card__heading">@Model.PercentBudgetUsed&percnt;</h3>
+                <p class="nhsuk-card__description">project budget used</p>
+            </div>
+        </div>
+        <div class="nhsuk-card">
+            <div class="nhsuk-card__content">
+                <h3 class="nhsuk-card__heading">@Model.TotalTokensUsed</h3>
+                <p class="nhsuk-card__description">tokens used</p>
+            </div>
+        </div>
+    }
     </div>
 </div>
 

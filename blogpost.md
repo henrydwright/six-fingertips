@@ -286,6 +286,15 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     Make changes to @_Layout.cshtml only so that the header uses the NHS transactional service header as detailed on @https://service-manual.nhs.uk/design-system/components/header 
     ```
     * It does half a job, but doesn't remove the navigation elements. I just copy and paste from the docs instead as it's far quicker.
-    
+    * I manually remove the reference to Frutiger in the CSS as I don't have a license for it
+    * I generate a new logo to replace the NHS logo in the header using Copilot on my laptop. It doesn't want to generate a hand with six fingers - clearly they've been prompted quite strongly to get the hands right.
+    * With a bit of additional help it can now start answering useful queries. It now has access to all the data it needs in theory, however LLMs are famously weak at arithmetic and arithmeic reasoning. By default the answers are astoundingly poor - inventing figures that have never ever existed.
+    * In the debug interface of Azure AI Foundry I try the same agent design but add the code interpreter tool. This is slightly better at simple queries, but still fails at things I'd expect a GCSE Maths student to pass.
+    * For example, with the code interpreter tool enabled, I ask the agent to create a graph showing male and female population history over the last five years. The AI correctly identifies the API calls to make to retrieve this data. But it misses a reasoning step and just displays the 0-4 population.
+* I want to publish this but I don't want it to bankrupt me so I want to add a limit to the API to stop API calls after a certain total cost
+    * I've asked AI a few questions which have set me in the right direction, but I actually do want to learn this so this time I'm going to implement myself and maybe get AI involved if I screw it up.
+    * Doing this yourself requires a lot more rabbit holes and reading to find what's relevant. I feel like I understand the potential pitfalls a lot more than if I'd just let AI do this though.
+    * I understand enough now to know that the code that the AI generated for me doesn't quite do what I want. However, I can now use bits of it to get to what I want.
+    * I did it! The satisfaction is much greater when you do it yourself!
 
     
