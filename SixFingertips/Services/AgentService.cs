@@ -114,12 +114,13 @@ public class AgentService
             // Create a new agent with the OpenAPI tool
             var agentResponse = await _agentsClient.Administration.CreateAgentAsync(
                 model: _modelDeploymentName,
-                name: "Fingertips Health Data Assistant (v3.1)",
-                instructions: "You are a helpful assistant that can access and analyze public health data from the Fingertips dataset. Use the fingertips_api_reduced tool to retrieve data when needed. "+
-                "The area type IDs available are: 7 - GP Practice; 170, 173 and 180 - Council; 54, 56, 58, 60 and 63 - CCG or sub-ICB location; Primary Care Network (PCN) - 204",
+                name: "Fingertips Health Data Assistant (v4.0)",
+                instructions: "You are a helpful assistant that can access and analyze public health data from the Fingertips dataset. Use the fingertips_api_reduced tool to retrieve data when needed. If provided with only an indicator name and you need the indicator ID, guess which profile ID it is most likely to fit into and see if it appears in the indicators for that profile. Use the code interpreter tool for any numerical calculations when needed (e.g. finding totals across age bands). CHECK THE SCHEMA for returned data so you interpret it correctly (e.g. for population summary array it is two genders, not two years of data). ALWAYS give your response in the following format: 'ANSWER:\n <answer to the user's question in natural language, using paragraphs for clarity if needed>\n\nWORKINGS: <list of tool calls made and chain of thought as bullet points in markdown>'\n"+
+                "The area type IDs available are: GP Practice - 7; Council - 502; ICB - 221; CCG or sub-ICB location - 66, 167; Primary Care Network (PCN) - 204; Whole of England - 15. Profile IDs available are: 18 - Smoking; 32 - Obesity, Physical Activity and Nutrition; 87 - Alcohol; 84 - Dementia; 139 - Diabetes. Deprivation indexes are HIGHER for LESS deprived areas - 10 is least deprived, 1 is most deprived.\n",
                 tools: new List<ToolDefinition> { openApiTool, codeInterpreterTool }
             );
             var agent = agentResponse.Value;
+            await Task.Delay(TimeSpan.FromMilliseconds(250));
 
             // Create a new thread
             var threadResponse = await _agentsClient.Threads.CreateThreadAsync();

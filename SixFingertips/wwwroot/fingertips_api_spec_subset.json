@@ -333,6 +333,147 @@
                     }
                 }
             }
+        },
+        "/api/grouproot_summaries/by_profile_id": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Gets a list of available indicators for a given profile ID and area type ID. Useful for finding what indicators are available for a certain area type and profile before retrieving the data using `Data_GetDataForSpecificArea`",
+                "description": "The indicators are differentiated by age and sex where appropriate. Returns a list of group root summaries.",
+                "operationId": "Data_ListIndicatorDefinitionsByProfile",
+                "parameters": [
+                    {
+                        "name": "profile_id",
+                        "in": "query",
+                        "description": "Profile ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "area_type_id",
+                        "in": "query",
+                        "description": "Area type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupRootSummary"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupRootSummary"
+                                    }
+                                }
+                            },
+                            "text/xml": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupRootSummary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/latest_data/specific_indicators_for_single_area": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Retrieve the latest value for a given indicator ID and area code.",
+                "operationId": "Data_GetDataForSpecificAreaAndIndicator",
+                "parameters": [
+                    {
+                        "name": "area_type_id",
+                        "in": "query",
+                        "description": "Area type ID of the area you are retrieving the indicator for",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "area_code",
+                        "in": "query",
+                        "description": "Area code of the area you are retrieving the indicator for",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "indicator_ids",
+                        "in": "query",
+                        "description": "Indicator IDs you wish to get values for. If you want to find multiple indicator ID values at once provide a comma-separated list.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "restrict_to_profile_ids",
+                        "in": "query",
+                        "description": "IGNORE THIS PARAMETER.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupRoot"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupRoot"
+                                    }
+                                }
+                            },
+                            "text/xml": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GroupRoot"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -542,6 +683,503 @@
                                 }
                             }
                         }
+                    }
+                }
+            },
+            "GroupRootSummary": {
+                "type": "object",
+                "properties": {
+                    "IndicatorName": {
+                        "type": "string",
+                        "description": "Description of what data point the indicator represents"
+                    },
+                    "IID": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "The indicator ID"
+                    },
+                    "Sex": {
+                        "$ref": "#/components/schemas/Sex",
+                        "description": "The groups of sex the indicator covers"
+                    },
+                    "Age": {
+                        "$ref": "#/components/schemas/Age",
+                        "description": "The age or age range the indicator covers"
+                    },
+                    "Category": {
+                        "$ref": "#/components/schemas/Category"
+                    },
+                    "DateChanges": {
+                        "$ref": "#/components/schemas/IndicatorDateChange",
+                        "description": "When the indicator was last updated"
+                    },
+                    "DataQualityNote": {
+                        "$ref": "#/components/schemas/DataQualityNote",
+                        "description": "Any data quality notes associated with the indicator"
+                    },
+                    "GroupId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "StateSex": {
+                        "type": "boolean"
+                    },
+                    "StateAge": {
+                        "type": "boolean"
+                    },
+                    "StateYearRange": {
+                        "type": "boolean"
+                    },
+                    "TimePeriod": {
+                        "type": "string",
+                        "description": "The time period the indicator covers"
+                    },
+                    "Unit": {
+                        "$ref": "#/components/schemas/Unit",
+                        "description": "The unit of measurement that the indicator is measured in (e.g. per 100,000, %, etc.)"
+                    },
+                    "ValueType": {
+                        "$ref": "#/components/schemas/ValueType",
+                        "description": "The method that the indicator value was calculated by (e.g. directly standardised rate, crude rate, etc.)"
+                    },
+                    "YearRange": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "How many whole years are covered by the time period the indicator is measured over"
+                    }
+                }
+            },
+            "GroupRoot": {
+                "type": "object",
+                "properties": {
+                    "Grouping": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Grouping"
+                        },
+                        "description": "IGNORE THIS PARAMETER"
+                    },
+                    "Data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CoreDataSet"
+                        },
+                        "description": "List of values (with confidence intervals and raw counts) for the indicator"
+                    },
+                    "Sequence": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "DateChanges": {
+                        "$ref": "#/components/schemas/IndicatorDateChange"
+                    },
+                    "GroupId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "IID": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Indicator ID"
+                    },
+                    "Category": {
+                        "$ref": "#/components/schemas/Category"
+                    },
+                    "StateSex": {
+                        "type": "boolean"
+                    },
+                    "Sex": {
+                        "$ref": "#/components/schemas/Sex",
+                        "description": "The groups of sex the indicator covers"
+                    },
+                    "Age": {
+                        "$ref": "#/components/schemas/Age",
+                        "description": "The age or age range the indicator covers"
+                    },
+                    "StateAge": {
+                        "type": "boolean"
+                    },
+                    "StateYearRange": {
+                        "type": "boolean"
+                    },
+                    "YearRange": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "PolarityId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "ComparatorMethodId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "RecentTrends": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/TrendMarkerResult"
+                        }
+                    }
+                }
+            },
+            "Grouping": {
+                "type": "object",
+                "properties": {
+                    "GroupingId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "GroupId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "SexId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "AgeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "CategoryTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "CategoryId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "AreaTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "ComparatorId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "IndicatorId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "PolarityId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "ComparatorMethodId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "SigLevel": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "ComparatorTargetId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Sequence": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "BaselineYear": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "BaselineQuarter": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "BaselineMonth": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "BaselineDataDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "DataPointYear": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "DataPointQuarter": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "DataPointMonth": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "DataPointDataDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "YearRange": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Period": {
+                        "type": "string"
+                    },
+                    "ComparatorData": {
+                        "$ref": "#/components/schemas/CoreDataSet"
+                    }
+                }
+            },
+            "TrendMarkerResult": {
+                "type": "object",
+                "properties": {
+                    "Marker": {
+                        "type": "integer",
+                        "format": "int32",
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ]
+                    },
+                    "MarkerForMostRecentValueComparedWithPreviousValue": {
+                        "type": "integer",
+                        "format": "int32",
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ]
+                    },
+                    "PointsUsed": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CoreDataSet": {
+                "type": "object",
+                "properties": {
+                    "AgeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "SexId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "IndicatorId": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Indicator ID for the indicator which explains the meaning of this value"
+                    },
+                    "AreaCode": {
+                        "type": "string",
+                        "description": "Area code this value relates to"
+                    },
+                    "Denom": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "Denom2": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "Year": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Year that the value relates to"
+                    },
+                    "YearRange": {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "How many years the value covers"
+                    },
+                    "Quarter": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Month": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Sig": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    "Significance": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "NoteId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "CategoryTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "CategoryId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "DataDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "LoCI": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Lower confidence interval for the value of the indicator"
+                    },
+                    "UpCI": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Upper confidence interval for the value of the indicator"
+                    },
+                    "LoCIF": {
+                        "type": "string"
+                    },
+                    "UpCIF": {
+                        "type": "string"
+                    },
+                    "LoCI99_8": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "UpCI99_8": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "LoCI99_8F": {
+                        "type": "string"
+                    },
+                    "UpCI99_8F": {
+                        "type": "string"
+                    },
+                    "Val": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Value of the indicator"
+                    },
+                    "ValF": {
+                        "type": "string"
+                    },
+                    "Count": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Raw count value for the indicator (i.e. the true value of the indicator before it has been standardised for population, etc.)"
+                    }
+                }
+            },
+            "Sex": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Age": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Sequence": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "Unit": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Value": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "Label": {
+                        "type": "string"
+                    },
+                    "ShowLeft": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "ValueType": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "IndicatorDateChange": {
+                "type": "object",
+                "properties": {
+                    "HasDataChangedRecently": {
+                        "type": "boolean"
+                    },
+                    "DateOfLastChange": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Category": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "CategoryTypeId": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "ShortName": {
+                        "type": "string"
+                    },
+                    "Sequence": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "DataQualityNote": {
+                "type": "object",
+                "properties": {
+                    "Id": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "Text": {
+                        "type": "string"
+                    },
+                    "Comment": {
+                        "type": "string"
                     }
                 }
             },
