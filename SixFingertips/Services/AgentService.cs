@@ -3,6 +3,8 @@ using Azure.Identity;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Azure;
+using Azure.Core;
+using System.Text.Json;
 
 namespace SixFingertips.Services;
 
@@ -10,6 +12,8 @@ public class AgentService
 {
     private readonly PersistentAgentsClient _agentsClient;
     private readonly MetricsQueryClient _metricsClient;
+    private readonly DefaultAzureCredential _azureCredential;
+    private readonly string _agentsEndpoint;
     private readonly string _modelDeploymentName;
     private readonly string _foundryResourceId;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -22,17 +26,17 @@ public class AgentService
     {
         _webHostEnvironment = webHostEnvironment;
 
-        var endpoint = configuration["AzureAI:Endpoint"] 
+        _agentsEndpoint = configuration["AzureAI:Endpoint"] 
             ?? throw new ArgumentNullException("AzureAI:Endpoint configuration is missing");
         _modelDeploymentName = configuration["AzureAI:ModelDeploymentName"] 
             ?? throw new ArgumentNullException("AzureAI:ModelDeploymentName configuration is missing");
         _foundryResourceId = configuration["AzureAI:ResourceID"]
             ?? throw new ArgumentNullException("AzureAI:ResourceID configuration is missing");
 
-        DefaultAzureCredential credential = new DefaultAzureCredential();
+        _azureCredential = new DefaultAzureCredential();
 
-        _metricsClient = new MetricsQueryClient(credential);
-        _agentsClient = new PersistentAgentsClient(endpoint, credential);
+        _metricsClient = new MetricsQueryClient(_azureCredential);
+        _agentsClient = new PersistentAgentsClient(_agentsEndpoint, _azureCredential);
     }
 
     public async Task<LifetimeUsage> GetLifetimeTokenUsageAsync()
@@ -79,14 +83,29 @@ public class AgentService
 
     public class AgentResponse
     {
-        public AgentResponse(string agentResponseText, LifetimeUsage agentResourceUsage) {
+        public AgentResponse(string agentResponseText, LifetimeUsage agentResourceUsage, List<OpenApiToolFunctionCall> agentApiCalls) {
             AgentResponseText = agentResponseText;
             AgentLifetimeResourceUsage = agentResourceUsage;
+            AgentApiCalls = agentApiCalls;
         }
         public string AgentResponseText {get;}
         public LifetimeUsage AgentLifetimeResourceUsage {get;}
+        public List<OpenApiToolFunctionCall> AgentApiCalls {get;}
     }
 
+    public class OpenApiToolFunctionCall
+    {
+        public OpenApiToolFunctionCall(string name, Dictionary<string, string> arguments, string output) {
+            Name = name;
+            Arguments = arguments;
+            Output = output;
+        }
+
+        public string Name {get;}
+        public Dictionary<string, string> Arguments {get;}
+        public string Output {get;}
+
+    }
     public async Task<AgentResponse> ProcessUserInputAsync(string userInput)
     {
         try
@@ -154,22 +173,42 @@ public class AgentService
             // Get the messages from the thread
             var messages = _agentsClient.Messages.GetMessages(thread.Id);
 
-            // This is where the tool use would be returned, if the API actually worked
+            // The SDK doesn't support looking into the function calls in the level of detail we need, so we're forced to use the REST API and
+            //  look into the JSON by hand
+            var apiCalls = new List<OpenApiToolFunctionCall>();
 
-            // var runSteps = _agentsClient.Runs.GetRunSteps(run.Value);
-            // foreach (RunStep rs in runSteps.Reverse()) {
-            //     var stepDetails = rs.StepDetails;
-            //     Console.WriteLine(stepDetails.ToString());
-            //     if (stepDetails is RunStepToolCallDetails) {
-            //         RunStepToolCallDetails toolCallDetails = (RunStepToolCallDetails)stepDetails;
-            //         foreach (RunStepToolCall toolCall in toolCallDetails.ToolCalls) {
-            //             if (toolCall is RunStepOpenAPIToolCall) {
-            //                 RunStepOpenAPIToolCall openApiToolCall = (RunStepOpenAPIToolCall)toolCall;
-            //                 Console.WriteLine(openApiToolCall.OpenAPI.Keys.ToString());
-            //             }
-            //         }
-            //     }
-            // }
+            HttpClient httpClient = new HttpClient();
+            string token = _azureCredential.GetToken(new TokenRequestContext(scopes: new[] {"https://ai.azure.com/.default"})).Token;
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var runSteps = _agentsClient.Runs.GetRunSteps(run.Value);
+            foreach (RunStep runStep in runSteps.Reverse()) {
+                try {
+                    string getUrl = $"{_agentsEndpoint}/threads/{thread.Id}/runs/{run.Value.Id}/steps/{runStep.Id}?api-version=v1";
+                    Console.WriteLine($"INFO: REST API GET {getUrl}");
+                    HttpResponseMessage response = await httpClient.GetAsync(getUrl);
+                    response.EnsureSuccessStatusCode();
+                    JsonDocument jsonContent = JsonDocument.Parse(await response.Content.ReadAsStreamAsync());
+                    JsonElement root = jsonContent.RootElement;
+                    string stepType = root.GetProperty("type").ToString();
+                    if (stepType == "tool_calls") {
+                        JsonElement.ArrayEnumerator toolCalls = root.GetProperty("step_details").GetProperty("tool_calls").EnumerateArray();
+                        foreach (JsonElement toolCall in toolCalls) {
+                            JsonElement functionDetails = toolCall.GetProperty("function");
+                            string name = functionDetails.GetProperty("name").ToString();
+                            JsonDocument argumentsDoc = JsonDocument.Parse(functionDetails.GetProperty("arguments").ToString());
+                            Dictionary<string, string> arguments = new Dictionary<string, string>();
+                            foreach (JsonProperty argument in argumentsDoc.RootElement.EnumerateObject()) {
+                                arguments.Add(argument.Name.ToString(), argument.Value.ToString());
+                            }
+                            string output = functionDetails.GetProperty("output").ToString();
+                            apiCalls.Add(new OpenApiToolFunctionCall(name, arguments, output));
+                        }
+                    }
+                } catch (Exception ex) {
+                    Console.WriteLine($"ERROR: Could not parse API tool request: {ex.Message}");
+                }
+            }
             
             // Get the first message (which should be the assistant's response)
             var firstMessage = messages.First();
@@ -180,11 +219,11 @@ public class AgentService
             if (firstMessage.ContentItems.First().GetType() == typeof(MessageTextContent))
             {
                 var msgTextContent = firstMessage.ContentItems.First() as MessageTextContent;
-                return new AgentResponse(msgTextContent?.Text ?? "No response received", lifetimeUsage);
+                return new AgentResponse(msgTextContent?.Text ?? "No response received", lifetimeUsage, apiCalls);
             }
             else
             {
-                return new AgentResponse("No response received", lifetimeUsage);
+                return new AgentResponse("No response received", lifetimeUsage, apiCalls);
             }
         }
         catch (Exception ex)

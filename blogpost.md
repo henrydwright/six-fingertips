@@ -293,8 +293,44 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * For example, with the code interpreter tool enabled, I ask the agent to create a graph showing male and female population history over the last five years. The AI correctly identifies the API calls to make to retrieve this data. But it misses a reasoning step and just displays the 0-4 population.
 * I want to publish this but I don't want it to bankrupt me so I want to add a limit to the API to stop API calls after a certain total cost
     * I've asked AI a few questions which have set me in the right direction, but I actually do want to learn this so this time I'm going to implement myself and maybe get AI involved if I screw it up.
-    * Doing this yourself requires a lot more rabbit holes and reading to find what's relevant. I feel like I understand the potential pitfalls a lot more than if I'd just let AI do this though.
+    ```
+    How do I get the token usage for the model with name `_modeDeploymentName` within code?
+    ```
+    * Doing this yourself requires a lot more rabbit holes and reading to find what's relevant. I feel like I understand the potential pitfalls a lot more than if I'd just let AI do this though. I also found a more efficient method myself which requires less Azure resource use and spend so that's also a win.
     * I understand enough now to know that the code that the AI generated for me doesn't quite do what I want. However, I can now use bits of it to get to what I want.
     * I did it! The satisfaction is much greater when you do it yourself!
+* I really want to show people what tool calls the agent made so they can verify if the steps its taken are valid. Sadly AI is non-deterministic so you can get more than one answer for exactly the same prompt.
+    * The SDK for .NET Core hasn't implemented the required methods to pull out the details of the tool call. It's not useful enough to verify output to know a tool was called, I need to know what tool was called.
+    * My Cursor Pro trial ran out so I need to be judicious with how I use those completions. I use Copilot online to ask questions as it's free...
+    ```
+    I am used to using the `requests` library in Python. I am now using .NET Core. Can you give me examples of how you would do a GET request in both `requests` in Python and the best-practice equivalent in .NET Core?
+    ```
+    * Aaah I hate dealing with Authentication in these APIs - suffice to say I'm a bit of an idiot for forgetting scopes and the need to prefix with "Bearer " for your token. Lots of AI help required to get me to the answer
+    ```
+    How do you use httpClient to do a GET request with headers set
+    ```
+    ```
+    Show me how to use HttpClient in C# to make an API call to this API endpoint - https://learn.microsoft.com/en-us/rest/api/aifoundry/aiagents/run-steps/get-run-step?view=rest-aifoundry-aiagents-v1&tabs=HTTP#security
+    ```
+    ```
+    How do I get the right access token to use that API using DefaultAzureCredential
+    ```
+    ```
+    401 PermissionDenied when using Bearer with https://ai.azure.com/.default scopes
+    ```
+    ```
+    What headers do I need to make REST API calls to Azure APIs?
+    ```
+    * I got there in the end. The JSON I wanted is in the content that the API returns. Shame on your Microsoft for putting out an SDK which doesn't even work for all the methods in your API
+* I don't know how to work with arbitrary JSON in C#. I just want to retrieve some arbitrary values from JSON strings to be able to display them in the page UI
+    * Time to ask AI
+    ```
+    What is the best way to work with arbitrary JSON in C#
+    ```
+    * A bit of code writing later I have something to try but it's broken. Turns out Cursor doesn't work with the VS .NET debugger so I have to switch back to VS Code...
+    * The C# syntax highlighting is MUCH nicer in VS Code but I'm sure I could have fixed that. Wonder what the dodgy default was.
+    * Debugger - I missed you! Time to find out what I'm doing wrong...
+
+
 
     

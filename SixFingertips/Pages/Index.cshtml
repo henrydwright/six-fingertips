@@ -7,6 +7,7 @@
 <div class="nhsuk-grid-row">
     <div class="nhsuk-grid-column-full-width">
         <h1 class="nhsuk-heading-l">What is your question?</h1>
+        <p><b>Hint:</b> Try asking "What smoking indicators are available at an ICB level?" "Give me summary information for Anytown GP Practice" "Tell me the year 6 obesity levels for England and Oxfordshire"</p>
         @if (!ModelState.IsValid)
         {
             <div class="nhsuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1">
@@ -53,7 +54,12 @@
                 Send
             </button>
         </form>
-
+    </div>
+    
+</div>
+<div class="nhsuk-grid-row">
+    <div class="nhsuk-grid-column-two-thirds">
+        <h2 class="nhsuk-heading-m">Response</h2>
         <div id="loadingMessage" style="display: none;" class="nhsuk-card nhsuk-card--feature">
             <div class="nhsuk-card__content">
                 <h2 class="nhsuk-card__heading nhsuk-heading-m">Processing your request</h2>
@@ -62,12 +68,10 @@
                 </div>
             </div>
         </div>
-
         @if (!string.IsNullOrEmpty(Model.AgentResponse))
         {
             <div class="nhsuk-card nhsuk-card--feature" id="responseCard">
                 <div class="nhsuk-card__content">
-                    <h2 class="nhsuk-card__heading nhsuk-heading-m">Response</h2>
                     <div class="nhsuk-card__description">
                         @if (!string.IsNullOrEmpty(Model.AgentResponseHtml))
                         {
@@ -83,46 +87,56 @@
                 </div>
             </div>
         }
-        <div class="nhsuk-inset-text">
-        <p><b>Hint:</b> Try asking "What smoking indicators are available at an ICB level?" "Give me summary information for Anytown GP Practice" "Tell me the year 6 obesity levels for England and Oxfordshire"</p>
-        </div>
+        else
+        {
+            <p><i>Your response will appear here.</i></p>
+        }
+    </div>
+    <div class="nhsuk-grid-column-one-third">
+        <h2 class="nhsuk-heading-m">Data Used</h2>
+        <p><i>The AI will tell you what tools it used here.</i></p>
+    </div>
+</div>
+<div class="nhsuk-grid-row">
+    <div class="nhsuk-grid-column-full-width">
         <h2 class="nhsuk-heading-m">When will the site stop working?</h2>
-    <p>To avoid being bankrupted, this site will stop after a certain amount of money is spent on the underlying GPT-4o-mini model. When you run a query, the total token usage and % budget used will be displayed below:</p>
-    @if (!String.IsNullOrEmpty(Model.PercentBudgetUsed))
-    {
-        <div class="nhsuk-card">
-            <div class="nhsuk-card__content">
-                <h3 class="nhsuk-card__heading">@Model.PercentBudgetUsed&percnt;</h3>
-                <p class="nhsuk-card__description">project budget used</p>
+        <p>To avoid being bankrupted, this site will stop after a certain amount of money is spent on the underlying GPT-4o-mini model.</p>
+        <p>When you run a query, the total token usage and % budget used will be displayed below:</p>
+        @if (!String.IsNullOrEmpty(Model.PercentBudgetUsed))
+        {
+            <div class="nhsuk-card">
+                <div class="nhsuk-card__content">
+                    <h3 class="nhsuk-card__heading">@Model.PercentBudgetUsed&percnt;</h3>
+                    <p class="nhsuk-card__description">project budget used</p>
+                </div>
             </div>
-        </div>
-        <div class="nhsuk-card">
-            <div class="nhsuk-card__content">
-                <h3 class="nhsuk-card__heading">@Model.TotalTokensUsed</h3>
-                <p class="nhsuk-card__description">tokens used</p>
+            <div class="nhsuk-card">
+                <div class="nhsuk-card__content">
+                    <h3 class="nhsuk-card__heading">@Model.TotalTokensUsed</h3>
+                    <p class="nhsuk-card__description">tokens used</p>
+                </div>
             </div>
-        </div>
-    }
-    <h2 class="nhsuk-heading-m">How does this site work?</h2>
-    <p class="nhsuk-body">
-        This site uses an Azure AI Foundry Agent based on GPT-4o-mini with access to 1) a subset of methods in the <a href="https://fingertips.phe.org.uk/">Fingertips</a> API and 2) a code interpreter to provide responses to natural language queries based on public health data.
-    </p>
-     <p class="nhsuk-body">
-      I used AI (specifically Cursor) to help me code this site. My experience of writing code with AI assistance is documented in this blog post from June 2025.
-    </p>
-    <p>
-        This site uses public sector information licensed under the Open Government Licence v3.0. Fingertips data is courtesy of Office for Health Improvement and Disparities. Public health profiles. 2025 https://fingertips.phe.org.uk/ © Crown copyright 2025</p>
-    </p>
-    <h2 class="nhsuk-heading-m">What are the limitations of this site?</h2>
-    <p class="nhsuk-body">
-        This is a piece of demonstration software, it has not been thoroughly tested and should not be relied upon for giving correct answers. 
-    </p>
-    <p class="nhsuk-body">
-        The agent only has access to a limited subset of Fingertips data, namely: profiles for smoking, obesity, diabetes, alcohol and dementia; GP and PCN summary data (including population breakdown); area code data (e.g. GP ODS codes, ONS codes); address data for GPs.
-    </p>
-    <p class="nhsuk-body">
-        Like many large language models, the model can be poor at interpreting data it has retrieved and may hallucinate. Always check the answer you have been given.
-    </p>
+        }
+                        <h2 class="nhsuk-heading-m">How does this site work?</h2>
+        <p class="nhsuk-body">
+            This site uses an Azure AI Foundry Agent based on GPT-4o-mini with access to 1) a subset of methods in the <a href="https://fingertips.phe.org.uk/">Fingertips</a> API and 2) a code interpreter to provide responses to natural language queries based on public health data.
+        </p>
+        <p class="nhsuk-body">
+        I used AI (specifically Cursor) to help me code this site. My experience of writing code with AI assistance is documented in this blog post from June 2025.
+        </p>
+        <p>
+            This site uses public sector information licensed under the Open Government Licence v3.0. Fingertips data is courtesy of Office for Health Improvement and Disparities. Public health profiles. 2025 https://fingertips.phe.org.uk/ © Crown copyright 2025</p>
+        </p>
+        <h2 class="nhsuk-heading-m">What are the limitations of this site?</h2>
+        <p class="nhsuk-body">
+            This is a piece of demonstration software, it has not been thoroughly tested and should not be relied upon for giving correct answers. 
+        </p>
+        <p class="nhsuk-body">
+            The agent only has access to a limited subset of Fingertips data, namely: profiles for smoking, obesity, diabetes, alcohol and dementia; GP and PCN summary data (including population breakdown); area code data (e.g. GP ODS codes, ONS codes); address data for GPs.
+        </p>
+        <p class="nhsuk-body">
+            Like many large language models, the model can be poor at interpreting data it has retrieved and may hallucinate. Always check the answer you have been given.
+        </p>
     </div>
 </div>
 
