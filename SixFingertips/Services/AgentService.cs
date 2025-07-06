@@ -11,88 +11,42 @@ namespace SixFingertips.Services;
 public class AgentService
 {
     private readonly PersistentAgentsClient _agentsClient;
-    private readonly MetricsQueryClient _metricsClient;
     private readonly DefaultAzureCredential _azureCredential;
     private readonly string _agentsEndpoint;
     private readonly string _modelDeploymentName;
-    private readonly string _foundryResourceId;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly ILogger<AgentService> _logger;
-    // costs accurate as of 22/06/2025 from https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/?cdn=disable
-    private const double COST_PER_1M_INPUT_TOKENS = 0.82;
-    private const double COST_PER_1M_OUTPUT_TOKENS = 3.27;
-    private const double PROJECT_BUDGET = 20.00;
+    private readonly UsageMetricsService _usageMetricsService;
 
-    public AgentService(IConfiguration configuration, IWebHostEnvironment webHostEnvironment, ILogger<AgentService> logger)
+    public AgentService(IConfiguration configuration, IWebHostEnvironment webHostEnvironment, ILogger<AgentService> logger, UsageMetricsService usageMetricsService)
     {
         _webHostEnvironment = webHostEnvironment;
         _logger = logger;
+        _usageMetricsService = usageMetricsService;
 
-        _agentsEndpoint = configuration["AzureAI:Endpoint"] 
+        _agentsEndpoint = configuration["AzureAI:Endpoint"]
             ?? throw new ArgumentNullException("AzureAI:Endpoint configuration is missing");
-        _modelDeploymentName = configuration["AzureAI:ModelDeploymentName"] 
+        _modelDeploymentName = configuration["AzureAI:ModelDeploymentName"]
             ?? throw new ArgumentNullException("AzureAI:ModelDeploymentName configuration is missing");
-        _foundryResourceId = configuration["AzureAI:ResourceID"]
-            ?? throw new ArgumentNullException("AzureAI:ResourceID configuration is missing");
 
         _azureCredential = new DefaultAzureCredential();
-
-        _metricsClient = new MetricsQueryClient(_azureCredential);
         _agentsClient = new PersistentAgentsClient(_agentsEndpoint, _azureCredential);
     }
 
-    public async Task<LifetimeUsage> GetLifetimeTokenUsageAsync()
-    {
-        string [] metricNames = new[] {"ProcessedPromptTokens", "GeneratedTokens"};
-        try {
-            Response<MetricsQueryResult> results = await _metricsClient.QueryResourceAsync(
-                _foundryResourceId,
-                metricNames,
-                new MetricsQueryOptions {
-                    Aggregations = {MetricAggregationType.Total},
-                    TimeRange = new QueryTimeRange(new TimeSpan(60,0,0,0)),
-                    Granularity = new TimeSpan(1,0,0,0)
-                } );
+    // ...removed GetLifetimeTokenUsageAsync, now in UsageMetricsService...
 
-            MetricTimeSeriesElement promptTokensResult = results.Value.GetMetricByName("ProcessedPromptTokens").TimeSeries[0];
-            MetricTimeSeriesElement completionTokenResult = results.Value.GetMetricByName("GeneratedTokens").TimeSeries[0];
-            int promptTokens = 0;
-            int completionTokens = 0;
-            for (int i = 0; i < promptTokensResult.Values.Count; i++) {
-                promptTokens += (int)(promptTokensResult.Values[i].Total ?? 0.0);
-                completionTokens += (int)(completionTokenResult.Values[i].Total ?? 0.0);
-            }
-            return new LifetimeUsage(promptTokens, completionTokens);
-
-        } catch (Exception ex) {
-            throw new Exception("Error retrieving lifetime token usage", ex);
-        }
-    }
-
-    public class LifetimeUsage 
-    {
-            public LifetimeUsage(int promptTokens, int completionTokens)
-            {
-                TotalPromptTokens = promptTokens;
-                TotalCompletionTokens = completionTokens;
-                double TotalCost = ((double)promptTokens / 1000000 * COST_PER_1M_INPUT_TOKENS) + ((double)completionTokens / 1000000 * COST_PER_1M_OUTPUT_TOKENS);
-                PercentProjectBudgetUsed = TotalCost / PROJECT_BUDGET;
-            }
-            public int TotalPromptTokens { get; }
-            public int TotalCompletionTokens { get; }
-            public double PercentProjectBudgetUsed { get; }
-    }
+    // ...LifetimeUsage class is now in UsageMetricsService...
 
     public class AgentResponse
     {
-        public AgentResponse(string agentResponseText, LifetimeUsage agentResourceUsage, List<ToolFunctionCall> agentApiCalls)
+        public AgentResponse(string agentResponseText, UsageMetricsService.LifetimeUsage agentResourceUsage, List<ToolFunctionCall> agentApiCalls)
         {
             AgentResponseText = agentResponseText;
             AgentLifetimeResourceUsage = agentResourceUsage;
             AgentToolCalls = agentApiCalls;
         }
         public string AgentResponseText { get; }
-        public LifetimeUsage AgentLifetimeResourceUsage { get; }
+        public UsageMetricsService.LifetimeUsage AgentLifetimeResourceUsage { get; }
         public List<ToolFunctionCall> AgentToolCalls { get; }
     }
 
@@ -114,7 +68,7 @@ public class AgentService
         try
         {
             // Check current usage levels
-            var lifetimeUsage = await GetLifetimeTokenUsageAsync();
+            var lifetimeUsage = await _usageMetricsService.GetLifetimeTokenUsageAsync();
             if (lifetimeUsage.PercentProjectBudgetUsed > 1.0)
             {
                 throw new Exception("Total AI token spend on this free project has been exceeded.");
@@ -157,7 +111,6 @@ public class AgentService
                 MessageRole.User,
                 userInput);
 
-            
             // Create and execute a run
             var run = await _agentsClient.Runs.CreateRunAsync(
                 thread.Id,
@@ -247,7 +200,9 @@ public class AgentService
             var firstMessage = messages.First();
 
             // Tidy up the agents by deleting this one
+            _logger.LogInformation("Deleting agent");
             await _agentsClient.Administration.DeleteAgentAsync(agent.Id);
+
             var contentItems = firstMessage.ContentItems;
             string fullAgentResponse = "";
 

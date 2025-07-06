@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddScoped<UsageMetricsService>();
 builder.Services.AddScoped<AgentService>();
 
 var app = builder.Build();

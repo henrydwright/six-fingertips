@@ -351,6 +351,18 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     ```
     Modify the AgentService to replace all uses of Console.WriteLine with the correct logging for .NET core
     ```
+## Nearing the end
+* It's time to tidy up the code a bit before I publish it. Luckily AI is really good at helping with this sort of thing
+    ```
+    You are an agent responsible for inspecting codebases to suggest improvements. Inspect the code base in SixFingertips. Evaluate it against best principles for C# and .NET Core code. Provide a list of possible improvements that would increase the quality of the code.
+    ```
+    * This has given me a list of things to start addressing. One of those is that AgentService is now huge and contains all the logic for everything. I want to split out the bit that does costs into it's own service.
+    ```
+    Currently the logic for interacting with the agent and the logic for looking up the resource usage metrics are all in AgentService.cs.
+
+    Please split out all the logic that is to do with resource utilisation metrics into a new Service called UsageMetricsService.
+    ```
+    * Flawless! My mess turned into something with a bit more separation of concerns.
 
 
     
