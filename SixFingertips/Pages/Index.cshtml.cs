@@ -5,10 +5,11 @@ using Markdig;
 
 namespace SixFingertips.Pages;
 
+[ValidateAntiForgeryToken]
 public class IndexModel : PageModel
 {
     private readonly ILogger<IndexModel> _logger;
-    private readonly AgentService _agentService;
+    private readonly IAgentService _agentService;
     private readonly Dictionary<string, string> _friendlyFingertipsFunctionNames;
 
     // take an argument name and get a pair of friendly name for agument and lookup for friendly names for values it could hold
@@ -25,13 +26,13 @@ public class IndexModel : PageModel
 
     [BindProperty]
     public string? PercentBudgetUsed { get; set; }
-    
+
     [BindProperty]
     public string? TotalTokensUsed { get; set; }
 
     public List<AgentService.ToolFunctionCall>? ApiCalls { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger, AgentService agentService)
+    public IndexModel(ILogger<IndexModel> logger, IAgentService agentService)
     {
         _logger = logger;
         _agentService = agentService;
@@ -83,7 +84,7 @@ public class IndexModel : PageModel
             ["data_point_offset"] = new KeyValuePair<string, Dictionary<string, string>>("Number of years back from latest available year to get data for", new Dictionary<string, string>()),
             ["indicator_ids"] = new KeyValuePair<string, Dictionary<string, string>>("ID for indicator", new Dictionary<string, string>())
         };
-        
+
     }
 
     public void OnGet()

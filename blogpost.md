@@ -362,7 +362,11 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
 
     Please split out all the logic that is to do with resource utilisation metrics into a new Service called UsageMetricsService.
     ```
-    * Flawless! My mess turned into something with a bit more separation of concerns.
+    * Flawless! My mess turned into something with a bit more separation of concerns. 
+    ```
+    Make a new interface IAgentService based on AgentService and use the interface in appropriate places in the codebase to separate code interface from implementation.
+    ```
+    * This really does improve my experience of coding. This is the important, but boring stuff that an AI can do really easily.
 
 
     

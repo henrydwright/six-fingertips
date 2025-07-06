@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SixFingertips.Services;
 
-public class UsageMetricsService
+public class UsageMetricsService : IUsageMetricsService
 {
     private readonly MetricsQueryClient _metricsClient;
     private readonly string _foundryResourceId;
@@ -30,6 +30,7 @@ public class UsageMetricsService
         string[] metricNames = new[] { "ProcessedPromptTokens", "GeneratedTokens" };
         try
         {
+            _logger.LogInformation("Getting token usage");
             Response<MetricsQueryResult> results = await _metricsClient.QueryResourceAsync(
                 _foundryResourceId,
                 metricNames,
