@@ -7,7 +7,6 @@
 <div class="nhsuk-grid-row">
     <div class="nhsuk-grid-column-full-width">
         <h1 class="nhsuk-heading-l">What is your question?</h1>
-        <p><b>Hint:</b> Try asking "What smoking indicators are available at an ICB level?" "Give me summary information for Anytown GP Practice" "Tell me the year 6 obesity levels for England and Oxfordshire" "Make me a bar graph showing the female population breakdown by age at Anywhere Health Centre"</p>
         @if (!ModelState.IsValid)
         {
             <div class="nhsuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1">
@@ -28,32 +27,49 @@
             </div>
         }
         <form method="post" id="questionForm">
+            @Html.AntiForgeryToken()
             <div class="nhsuk-form-group @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-form-group--error" : "")">
-                <label class="nhsuk-label" for="input-text">
-                    Enter your question
-                </label>
-                <div class="nhsuk-hint" id="input-text-hint">
-                    For best results ensure your question is specific and includes mention of the GP practice(s), PCN(s) or geographical areas you are interested in.
-                </div>
-                @if (ModelState["InputText"]?.Errors?.Count > 0)
-                {
-                    <span class="nhsuk-error-message" id="input-text-error">
-                        <span class="nhsuk-u-visually-hidden">Error:</span> @ModelState["InputText"]?.Errors[0]?.ErrorMessage
-                    </span>
-                }
-                <textarea 
-                    class="nhsuk-textarea @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-textarea--error" : "")" 
-                    id="input-text" 
-                    name="InputText" 
-                    rows="5" 
-                    aria-describedby="input-text-hint @(ModelState["InputText"]?.Errors.Count > 0 ? "input-text-error" : "")"
-                    asp-for="InputText"></textarea>
+            <label class="nhsuk-label" for="input-text">
+                Enter your question
+            </label>
+            <div class="nhsuk-hint" id="input-text-hint">
+                For best results ensure your question is specific and includes mention of the GP practice(s), PCN(s) or council areas you are interested in.
+            </div>
+            @if (ModelState["InputText"]?.Errors?.Count > 0)
+            {
+                <span class="nhsuk-error-message" id="input-text-error">
+                <span class="nhsuk-u-visually-hidden">Error:</span> @ModelState["InputText"]?.Errors[0]?.ErrorMessage
+                </span>
+            }
+            <textarea 
+                class="nhsuk-textarea @(ModelState["InputText"]?.Errors.Count > 0 ? "nhsuk-textarea--error" : "")" 
+                id="input-text" 
+                name="InputText" 
+                rows="5" 
+                aria-describedby="input-text-hint @(ModelState["InputText"]?.Errors.Count > 0 ? "input-text-error" : "")"
+                asp-for="InputText"></textarea>
             </div>
 
             <button class="nhsuk-button" data-module="nhsuk-button" type="submit">
-                Send
+            Send
             </button>
         </form>
+        <details class="nhsuk-details">
+            <summary class="nhsuk-details__summary">
+                <span class="nhsuk-details__summary-text">
+                See example questions you can ask
+                </span>
+            </summary>
+            <div class="nhsuk-details__text">
+                <p>Try asking...</p>
+                <ul>
+                    <li>"What smoking indicators are available at an ICB level?"</li> 
+                    <li>"Give me summary information for Anytown GP Practice"</li>
+                    <li>"Tell me the year 6 obesity levels for England and Oxfordshire"</li>
+                    <li>"Make me a bar graph showing the female population breakdown by age at Anywhere Health Centre"</li>
+                </ul> 
+            </div>
+        </details>
     </div>
     
 </div>
@@ -89,7 +105,7 @@
         }
         else
         {
-            <p><i>Your response will appear here.</i></p>
+            <p id="responseAppearSoonText"><i>Your response will appear here.</i></p>
         }
     </div>
 </div>
@@ -135,7 +151,7 @@
                             </span>
                         </summary>
                             <div class="nhsuk-details__text">
-                                @apiCall.Output
+                                <code>@apiCall.Output</code>
                             </div>
                         </details>
                     </div>
@@ -196,6 +212,113 @@
         <p class="nhsuk-body">
             Like many large language models, the model can be poor at interpreting data it has retrieved and may hallucinate. Always check the answer you have been given.
         </p>
+        <h2 class="nhsuk-heading-m">Where is my data sent?</h2>
+        <p class="nhsuk-body">
+            All user input is sent to a globally provisioned OpenAI <code>GPT-4o-mini</code> AI model hosted by Microsoft/OpenAI. This is the same as using a service like the free version of ChatGPT. User input will also be logged on the Azure Web App server that this site runs on.
+        </p>
+        <p class="nhsuk-body">
+            <b>DO NOT</b> enter any sensitive information (personal, commercial or otherwise) to the prompt above. Aside from it being logged and visible to myself and Microsoft, this is a hobby website with best-efforts security. I take no responsibility for any loss occured as a result of using this website.
+        </p>
+        <h3 class="nhsuk-heading-s">Libraries used (with licenses if needed)</h3>
+        <details class="nhsuk-details">
+        <summary class="nhsuk-details__summary">
+            <span class="nhsuk-details__summary-text">
+            Azure SDK for .NET
+            </span>
+        </summary>
+            <div class="nhsuk-details__text">
+                <code>
+                The MIT License (MIT)<br/>
+                <br/>
+                Copyright (c) 2015 Microsoft<br/>
+                <br/>
+                Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:<br/>
+                <br/>
+                The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.<br/>
+                <br/>
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                SOFTWARE.
+                </code>
+            </div>
+        </details>
+        <details class="nhsuk-details">
+        <summary class="nhsuk-details__summary">
+            <span class="nhsuk-details__summary-text">
+            NHS Frontend
+            </span>
+        </summary>
+            <div class="nhsuk-details__text">
+                <code>
+                MIT License<br/>
+                <br/>
+                Copyright (c) 2019 NHS Digital<br/>
+                <br/>
+                Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:<br/>
+                <br/>
+                The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.<br/>
+                <br/>
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                SOFTWARE.
+                </code>
+            </div>
+        </details>
+        <details class="nhsuk-details">
+        <summary class="nhsuk-details__summary">
+            <span class="nhsuk-details__summary-text">
+            Markdig
+            </span>
+        </summary>
+            <div class="nhsuk-details__text">
+                <code>
+                Copyright (c) 2018-2019, Alexandre Mutel<br/>
+                All rights reserved.<br/>
+                <br/>
+                Redistribution and use in source and binary forms, with or without modification
+                , are permitted provided that the following conditions are met:<br/>
+                <br/>
+                1. Redistributions of source code must retain the above copyright notice, this 
+                list of conditions and the following disclaimer.<br/>
+                <br/>
+                2. Redistributions in binary form must reproduce the above copyright notice, 
+                this list of conditions and the following disclaimer in the documentation 
+                and/or other materials provided with the distribution.<br/>
+                <br/>
+                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+                ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+                WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+                DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+                FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+                DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+                SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+                CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+                OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+                OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+                </code>
+            </div>
+        </details>
+
     </div>
 </div>
 
@@ -204,10 +327,14 @@
         const form = document.getElementById('questionForm');
         const loadingMessage = document.getElementById('loadingMessage');
         const responseCard = document.getElementById('responseCard');
+        const responseAppearsHereText = document.getElementById('responseAppearSoonText');
 
         form.addEventListener('submit', function() {
             if (responseCard) {
                 responseCard.style.display = 'none';
+            }
+            if (responseAppearsHereText) {
+                responseAppearsHereText.style.display = 'none';
             }
             loadingMessage.style.display = 'block';
         });

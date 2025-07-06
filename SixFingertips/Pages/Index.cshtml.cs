@@ -66,6 +66,7 @@ public class IndexModel : PageModel
         {
             ["18"] = "Smoking",
             ["32"] = "Obesity, Physical Activity and Nutrition",
+            ["84"] = "Dementia",
             ["87"] = "Alcohol",
             ["139"] = "Diabetes"
         };
