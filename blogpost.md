@@ -252,8 +252,8 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     Using the example in @https://learn.microsoft.com/en-us/azure/ai-services/agents/how-to/tools/openapi-spec-samples?pivots=csharp , modify ONLY code in @AgentService.cs  to add an OpenApiToolDefinition that uses the OpenAPI spec defined in "wwwroot/fingertips_api_spec.json"
     ```
     * Again, worked first time! I suspect I need to improve the prompt because it's getting stuck using the (admittedly very complicated) API for Fingertips.
-# Minute 180-...
 
+# Minute 180 to a number much much larger than 180
 * Now it's time to refine the design and functionality of the app before readying this blog post for publication
 * The prompt to the agent clearly needs work as it fails to understand how to use the Fingertips API
     * To be fair to it, I don't currently understand how to use the Fingertips API
@@ -299,6 +299,7 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     * Doing this yourself requires a lot more rabbit holes and reading to find what's relevant. I feel like I understand the potential pitfalls a lot more than if I'd just let AI do this though. I also found a more efficient method myself which requires less Azure resource use and spend so that's also a win.
     * I understand enough now to know that the code that the AI generated for me doesn't quite do what I want. However, I can now use bits of it to get to what I want.
     * I did it! The satisfaction is much greater when you do it yourself!
+* It needs to be able to retrieve more data to work with, so I add in some prompt changes and carefully curate a few more methods from the Fingertips API into my adapted API spec
 * I really want to show people what tool calls the agent made so they can verify if the steps its taken are valid. Sadly AI is non-deterministic so you can get more than one answer for exactly the same prompt.
     * The SDK for .NET Core hasn't implemented the required methods to pull out the details of the tool call. It's not useful enough to verify output to know a tool was called, I need to know what tool was called.
     * My Cursor Pro trial ran out so I need to be judicious with how I use those completions. I use Copilot online to ask questions as it's free...
@@ -321,7 +322,7 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     ```
     What headers do I need to make REST API calls to Azure APIs?
     ```
-    * I got there in the end. The JSON I wanted is in the content that the API returns. Shame on your Microsoft for putting out an SDK which doesn't even work for all the methods in your API
+    * I got there in the end. The JSON I wanted _is_ in the content that the API returns. Shame on your Microsoft for putting out an SDK which doesn't even work for all the methods in your API!
 * I don't know how to work with arbitrary JSON in C#. I just want to retrieve some arbitrary values from JSON strings to be able to display them in the page UI
     * Time to ask AI
     ```
@@ -329,8 +330,27 @@ I'm also studying for an AI Engineering cert so will make use of Azure's offerin
     ```
     * A bit of code writing later I have something to try but it's broken. Turns out Cursor doesn't work with the VS .NET debugger so I have to switch back to VS Code...
     * The C# syntax highlighting is MUCH nicer in VS Code but I'm sure I could have fixed that. Wonder what the dodgy default was.
-    * Debugger - I missed you! Time to find out what I'm doing wrong...
+    * Debugger - I missed you! Time to find out what I'm doing wrong... Yeah I just missed out one level of navigation when navigating the JSON hierarchy.
+    * Got everything ready to display in the page UI but now I've got a class and a completely impenetrable error from .NET - lovely.
+    ```
+    Are there any restrictions on type for elements of a PageModel class in .NET Core?
+    ```
+    * Turns out `dotnet watch` just hates me making the changes I was making on the fly. Restarting the server fixed things.
+    * This also gives me an opportunity to try out Github Copilot. The inline fixes seem much the same as Cursor which is good and it helps me fix some grunt work changing the way I wrote something earlier which I didn't like and fixing some syntax to be less verbose
+    * Copilot chat is very similar to Cursor but it doesn't seem as agentic - admittedly it did perform the small task I asked of it very well
+    ```
+    Modify the provided code selection which is a bullet point list in the format YYY [ZZZ] - XXX [MMM] to be a table where the first column is ZZZ (YYY) and the second column is MMM (XXX).
 
+    Use the following table as an example of the classes to apply so it matches the formatting of the rest of the site
+    <NHS table example from website>
+    ```
+    * It gets confused sometimes with whole of England queries between the area type ID and area code for England so I hard code those into the system prompt.
+    * This makes it stop using search and start using "Get children" for the whole of England which is not good. I change it back and live with the problem. My last step will be to modify the system prompt to improve performance at some point.
+    * Now added the ability to download and display images (for example if a graph is created)
+    * Time to tidy up some bad practices using AI to help me fix my mistakes
+    ```
+    Modify the AgentService to replace all uses of Console.WriteLine with the correct logging for .NET core
+    ```
 
 
     
